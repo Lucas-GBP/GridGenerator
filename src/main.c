@@ -3,6 +3,7 @@
 
 // Math Constansts
 const double sqrt_three = 1.732050807568877293527446341505872366942805253810380628055806;
+const double roll20_factor = 1.02776101388; // 5109/4971
 // SVG's elements
 const char* header = "<svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" viewBox=\"0 0 %f %f\" width=\"%fpx\" height=\"%fpx\">\n";
 const char* close_svg = "</svg>\n";
@@ -33,7 +34,7 @@ int main(int argc, char** argv){
     const double width_odd_offset = l_sqrt3_per2;
     const double height_scale = (double)(3*l_per2);
     const double view_box_width = (double)(width*width_scale+width_odd_offset+stroke_width/2);
-    const double view_box_height = (double)((size*(height*3+1)+stroke_width)/2);
+    const double view_box_height = (double)((size*(height*3+1)+stroke_width)/2)*roll20_factor;
 
     // Creating file
     FILE* file = fopen("file.svg", "w+");
@@ -42,24 +43,27 @@ int main(int argc, char** argv){
         return 1;
     }
 
-    //
-    // Populating file
-    //
+    /*
+    * Populating file
+    */
+    //Header
     fprintf(file, 
         header, 
         view_box_width, view_box_height,
         view_box_width*scale_px, view_box_height*scale_px
     );
+    // Hexagon
     fprintf(
         file, empty_hexagon,
-        l_sqrt3_per2, (double)(0),
-        l_sqrt3_per2, l_per2,
-        (double)(0), (double)size,
-        (double)(-1*l_sqrt3_per2), l_per2,
-        (double)(-1*l_sqrt3_per2), (double)(-1*l_per2),
-        (double)(0), (double)(-1*size),
-        stroke_color, stroke_width
+        l_sqrt3_per2, (double)(0)*roll20_factor,
+        l_sqrt3_per2, l_per2*roll20_factor,
+        (double)(0), (double)size*roll20_factor,
+        (double)(-1*l_sqrt3_per2), l_per2*roll20_factor,
+        (double)(-1*l_sqrt3_per2), (double)(-1*l_per2)*roll20_factor,
+        (double)(0), (double)(-1*size)*roll20_factor,
+        stroke_color, stroke_width*roll20_factor
     );
+    // Rectangle
     fprintf(file, empty_rectangle,
         view_box_width, view_box_height, background_color
     );
@@ -68,11 +72,19 @@ int main(int argc, char** argv){
     for(long i = 0; i < height; i++){
         if(i%2){
             for(long j = 0; j < width; j++){
-                fprintf(file, use_hexagon, (double)(j*width_scale+width_odd_offset), (double)(i*height_scale));
+                fprintf(file, 
+                    use_hexagon, 
+                    (double)(j*width_scale+width_odd_offset), 
+                    (double)(i*height_scale*roll20_factor)
+                );
             }
         } else {
             for(long j = 0; j < width; j++){
-                fprintf(file, use_hexagon, (double)(j*width_scale), (double)(i*height_scale));
+                fprintf(file, 
+                    use_hexagon, 
+                    (double)(j*width_scale), 
+                    (double)(i*height_scale*roll20_factor)
+                );
             }
         }
         fputc('\n', file);
