@@ -4,9 +4,9 @@
 // Math Constansts
 const double sqrt_three = 1.732050807568877293527446341505872366942805253810380628055806;
 // Roll 20 magical numbers
-const double roll20_factor = 1.02776101388*1.000424809; // Roll20 height distortion factor
+const double roll20_factor = 1.028197616008545; // Roll20 height distortion factor
 const double roll20_size = 2; // [unit]
-const double roll20_hex_width = 75.33098153*0.9982343843; // [pixel]
+const double roll20_hex_width = 75.1979759663; // [pixel]
 const double roll20_hex_scale_px = roll20_hex_width/(sqrt_three*roll20_size); // Total hexagon width in [pixel/unit]
 const double roll20_stroke_width = 0.05; // [unit]
 // SVG's elements
