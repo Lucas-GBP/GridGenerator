@@ -3,7 +3,12 @@
 
 // Math Constansts
 const double sqrt_three = 1.732050807568877293527446341505872366942805253810380628055806;
-const double roll20_factor = 1.02776101388; // 5109/4971
+// Roll 20 magical numbers
+const double roll20_factor = 1.02776101388*1.000424809; // Roll20 height distortion factor
+const double roll20_size = 2; // [unit]
+const double roll20_hex_width = 75.33098153*0.9982343843; // [pixel]
+const double roll20_hex_scale_px = roll20_hex_width/(sqrt_three*roll20_size); // Total hexagon width in [pixel/unit]
+const double roll20_stroke_width = 0.05; // [unit]
 // SVG's elements
 const char* header = "<svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" viewBox=\"0 0 %f %f\" width=\"%fpx\" height=\"%fpx\">\n";
 const char* close_svg = "</svg>\n";
@@ -22,10 +27,10 @@ int main(int argc, char** argv){
     const long width = atol(argv[1]);
     const long height = atol(argv[2]);
     const int size = 2;
-    const double stroke_width =  0.2;
+    const double stroke_width =  roll20_stroke_width;
     const char* stroke_color = "black";
     const char* background_color = "none";
-    const int scale_px = 35;
+    const double scale_px = roll20_hex_scale_px;
     // Hexagon Blueprint
     const double l_sqrt3_per2 = (double)(sqrt_three*size/2);
     const double l_per2 = (double)(size/2);
