@@ -1,9 +1,5 @@
 #include "main.h" 
 
-//#define STANDART_DATA
-//#define STANDART_ROLL20_DATA
-#define ROLL20_DATA
-
 /*
  * Standart colors
 */
@@ -13,55 +9,75 @@ char* white = "white";
 
 int main(int argc, char** argv){
     // Validating inputs
-    if(argc < 3){
-        printf("Error:\tNot enough arguments.\n\tIt's necessary at least 2 number arguments for width and height\n");
+    input_data input;
+    if(randle_arguments(argc, argv, &input)){
         return 1;
     }
-
     // Inputs
-    #ifdef STANDART_DATA
-    population_data data = {
-        .width = atol(argv[1]),
-        .height = atol(argv[2]),
-        .size = 2,
-        .stroke_width = 0.2,
-        .stroke_color = black,
-        .background_color = transparent,
-        .scale_px = 35
-    };
-    #endif
-    #ifdef STANDART_ROLL20_DATA
-    population_data data = {
-        .width = (long)(atol(argv[1])),
-        .height = (long)(atol(argv[2])),
-        .size = roll20_standart_size,
-        .stroke_width = roll20_standart_stroke_width,
-        .stroke_color = black,
-        .background_color = transparent,
-        .scale_px = roll20_hex_width/(sqrt_three*roll20_standart_size)
-    };
-    #endif
-    #ifdef ROLL20_DATA
-    population_data data = {
-        .width = (long)(atol(argv[1])),
-        .height = (long)(atol(argv[2])*roll20_height_scale),
-        .size = roll20_standart_size*roll20_width_scale,
-        .stroke_width = roll20_standart_stroke_width,
-        .stroke_color = black,
-        .background_color = transparent,
-        .scale_px = roll20_hex_width/(sqrt_three*roll20_standart_size)
-    };
-    #endif
+    population_data data;
+    randle_input_data(&input, &data);
 
     FILE* file = fopen("file.svg", "w+");
     if(!file){
         printf("Error:\n\tfopen() returned NULL");
         return 1;
     }
-    populate_roll20_hex_grid(file, &data);
+
+    if(input.roll20_flag || input.roll20_exact_flag){
+        populate_roll20_hex_grid(file, &data);
+    } else {
+        populate_hex_grid(file, &data);
+    }
 
     fclose(file);
     return 0;
+}
+
+int randle_arguments(int argc, char** argv, input_data* input){
+    if(argc < 3){
+        printf("Error:\tNot enough arguments.\n\tIt's necessary at least 2 number arguments for width and height\n");
+        return 1;
+    }
+
+    input->width = atol(argv[1]);
+    input->height = atol(argv[2]);
+    input->roll20_flag = TRUE;
+    input->roll20_exact_flag = TRUE;
+    return 0;
+}
+
+void randle_input_data(input_data* input, population_data* data){
+    if (input->roll20_flag || input->roll20_exact_flag){
+        if(input->roll20_exact_flag){
+            data->width = input->width;
+            data->height = (long)(input->height*roll20_height_scale);
+            data->size = roll20_standart_size*roll20_width_scale;
+            data->stroke_width = roll20_standart_stroke_width;
+            data->stroke_color = black;
+            data->background_color = transparent;
+            data->scale_px = roll20_hex_width/(sqrt_three*roll20_standart_size);
+
+            return;
+        }
+        data->width = input->width;
+        data->height = input->height;
+        data->size = roll20_standart_size;
+        data->stroke_width = roll20_standart_stroke_width;
+        data->stroke_color = black;
+        data->background_color = transparent;
+        data->scale_px = roll20_hex_width/(sqrt_three*roll20_standart_size);
+
+        return;
+    }
+    data->width = input->width;
+    data->height = input->height;
+    data->size = 2;
+    data->stroke_width = 0.2;
+    data->stroke_color = black;
+    data->background_color = transparent;
+    data->scale_px = 35;
+
+    return;
 }
 
 void populate_hex_grid(FILE* file, population_data* data){
@@ -96,7 +112,7 @@ void populate_hex_grid(FILE* file, population_data* data){
         view_box_width, view_box_height, data->background_color
     );
 
-    fputs("\t<g>\n", file);
+    fputs(open_group, file);
     for(long i = 0; i < data->height; i++){
         if(i%2){
             for(long j = 0; j < data->width; j++){
@@ -117,7 +133,7 @@ void populate_hex_grid(FILE* file, population_data* data){
         }
         fputc('\n', file);
     }
-    fputs("\t</g>\n", file);
+    fputs(close_group, file);
     fputs(close_svg, file);
 };
 
