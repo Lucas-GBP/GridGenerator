@@ -15,15 +15,17 @@ int main(int argc, char** argv){
     }
     // Inputs
     population_data data;
-    randle_input_data(&input, &data);
+    if(randle_input_data(&input, &data)){
+        return 1;
+    }
 
-    FILE* file = fopen("file.svg", "w+");
+    FILE* file = fopen(data.file_name, "w+");
     if(!file){
         printf("Error:\n\tfopen() returned NULL");
         return 1;
     }
 
-    if(input.roll20_flag || input.roll20_exact_flag){
+    if(input.roll20_flag){
         populate_roll20_hex_grid(file, &data);
     } else {
         populate_hex_grid(file, &data);
@@ -42,23 +44,13 @@ int randle_arguments(int argc, char** argv, input_data* input){
     input->width = atol(argv[1]);
     input->height = atol(argv[2]);
     input->roll20_flag = TRUE;
-    input->roll20_exact_flag = TRUE;
+    input->mode = HEX_ROLL20_EXACT_SIZE;
     return 0;
 }
 
-void randle_input_data(input_data* input, population_data* data){
-    if (input->roll20_flag || input->roll20_exact_flag){
-        if(input->roll20_exact_flag){
-            data->width = input->width;
-            data->height = (long)(input->height*roll20_height_scale);
-            data->size = roll20_standart_size*roll20_width_scale;
-            data->stroke_width = roll20_standart_stroke_width;
-            data->stroke_color = black;
-            data->background_color = transparent;
-            data->scale_px = roll20_hex_width/(sqrt_three*roll20_standart_size);
-
-            return;
-        }
+int randle_input_data(input_data* input, population_data* data){
+    switch (input->mode){
+    case HEX_ROLL20:
         data->width = input->width;
         data->height = input->height;
         data->size = roll20_standart_size;
@@ -66,18 +58,34 @@ void randle_input_data(input_data* input, population_data* data){
         data->stroke_color = black;
         data->background_color = transparent;
         data->scale_px = roll20_hex_width/(sqrt_three*roll20_standart_size);
+        sprintf(data->file_name, standart_roll20_file_name, (int)data->width, (int)data->height);
+        data->file_name = "hexagonal_grid_roll20.svg";
 
-        return;
+        return 0;
+    case HEX_ROLL20_EXACT_SIZE:
+        data->width = input->width;
+        data->height = (long)(input->height*roll20_height_scale);
+        data->size = roll20_standart_size*roll20_width_scale;
+        data->stroke_width = roll20_standart_stroke_width;
+        data->stroke_color = black;
+        data->background_color = transparent;
+        data->scale_px = roll20_hex_width/(sqrt_three*roll20_standart_size);
+        data->file_name = "hexagonal_grid_roll20.svg";
+
+        return 0;
+    case HEX_STANDART:
+    default:
+        data->width = input->width;
+        data->height = input->height;
+        data->size = 2;
+        data->stroke_width = 0.2;
+        data->stroke_color = black;
+        data->background_color = transparent;
+        data->scale_px = 35;
+        data->file_name = "hexagonal_grid.svg";
+
+        return 0;
     }
-    data->width = input->width;
-    data->height = input->height;
-    data->size = 2;
-    data->stroke_width = 0.2;
-    data->stroke_color = black;
-    data->background_color = transparent;
-    data->scale_px = 35;
-
-    return;
 }
 
 void populate_hex_grid(FILE* file, population_data* data){

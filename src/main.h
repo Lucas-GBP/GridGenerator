@@ -35,6 +35,8 @@ const char* close_group = "\t</g>\n";
 const char* empty_hexagon = "\t<defs>\n\t\t<path id=\"H\" d=\"M%f %fl%f %fl%f %fl%f %fl%f %fl%f %fZ\" fill=\"none\" stroke=\"%s\" stroke-width=\"%.2f\"/>\n\t</defs>\n";
 const char* empty_rectangle = "\t<rect x=\"0\" y=\"0\" width=\"%f\" height=\"%f\" fill=\"%s\"/>\n";
 const char* use_hexagon = "\t\t<use xlink:href=\"#H\" x=\"%f\" y=\"%f\"/>\n";
+const char* standart_file_name = "hexagonal_grid_%dx%d.svg";
+const char* standart_roll20_file_name = "hexagonal_grid_roll20_%dx%d.svg";
 
 /*
  * Structs
@@ -42,16 +44,16 @@ const char* use_hexagon = "\t\t<use xlink:href=\"#H\" x=\"%f\" y=\"%f\"/>\n";
 typedef int8_t bool;
 
 enum MODES {
-    STANDART,
-    ROLL20,
-    ROLL20_EXACT_SIZE
+    HEX_STANDART,
+    HEX_ROLL20,
+    HEX_ROLL20_EXACT_SIZE
 };
 
 struct input_data {
     long width;             // Horizontal quantity of cells
     long height;            // Vertical quantity of cells
-    bool roll20_flag;       //s
-    bool roll20_exact_flag; //
+    bool roll20_flag;       //
+    enum MODES mode;        //
 };
 typedef struct input_data input_data;
 
@@ -63,6 +65,7 @@ struct population_data {
     char* stroke_color;     // Hex-code in string of stroke color
     char* background_color; // Hex-code in string of background color
     double scale_px;        // Total hexagon width in [pixel/unit]
+    char* file_name;        // File Name
 };
 typedef struct population_data population_data;
 
@@ -70,7 +73,7 @@ typedef struct population_data population_data;
  * Functions
  */
 int randle_arguments(int argc, char** argv, input_data* input);
-void randle_input_data(input_data* input, population_data* data);
+int randle_input_data(input_data* input, population_data* data);
 void populate_hex_grid(FILE* file, population_data* data);
 void populate_roll20_hex_grid(FILE* file, population_data* data);
 
