@@ -44,7 +44,7 @@ int randle_arguments(int argc, char** argv, input_data* input){
     input->width = atol(argv[1]);
     input->height = atol(argv[2]);
     input->roll20_flag = TRUE;
-    input->mode = HEX_ROLL20;
+    input->mode = HEX_ROLL20_EXACT_SIZE;
     return 0;
 }
 
@@ -57,7 +57,7 @@ int randle_input_data(input_data* input, population_data* data){
         data->stroke_width = roll20_standart_stroke_width;
         data->stroke_color = black;
         data->background_color = transparent;
-        data->scale_px = roll20_hex_width/(sqrt_three*roll20_standart_size);
+        data->scale_px = roll20_scale_px;
         data->file_name = "hexagonal_grid_roll20.svg";
 
         return 0;
@@ -68,7 +68,7 @@ int randle_input_data(input_data* input, population_data* data){
         data->stroke_width = roll20_standart_stroke_width;
         data->stroke_color = black;
         data->background_color = transparent;
-        data->scale_px = roll20_hex_width/(sqrt_three*roll20_standart_size);
+        data->scale_px = roll20_scale_px;
         data->file_name = "hexagonal_grid_roll20.svg";
 
         return 0;

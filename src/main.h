@@ -12,18 +12,19 @@
  * Math Constansts
  */
 const double sqrt_three = 1.732050807568877293527446341505872366942805253810380628055806;
-const double sqrt_tree_2 = sqrt_three/2.0;
+const double sqrt_tree_2 = sqrt_three/2;
 
 /*
  * Roll 20 magical numbers
  */
 const double roll20_standart_cell_size = 70.0;      // [pixel]
-const double roll20_standart_stroke_width = 0.05;   // [unit]
-const double roll20_standart_size = 2.0;            // [unit]
+const double roll20_standart_stroke_width = 0.025;   // Standart stroke width [unit]
+const double roll20_standart_size = 1.0;            // Standart Hexagon side lenght [unit]
 const double roll20_width_scale = 0.926;            // Roll20 width cell quantity ratio
-const double roll20_height_scale = 1.12;            // Roll20 height cell quantity ratio
-const double roll20_hex_width = 75.1979759663;      // [pixel]
+const double roll20_hex_width = 75.1979759663;      // Standart Hexagon width in roll20 [pixel]
 const double roll20_factor = 1.028197616008545;     // Roll20 height distortion factor
+const double roll20_scale_px = roll20_hex_width/(sqrt_three*roll20_standart_size);
+const double roll20_height_scale = (2*roll20_factor*roll20_width_scale/sqrt_three);            // Roll20 height cell q0
 
 /*
  * SVG's elements
