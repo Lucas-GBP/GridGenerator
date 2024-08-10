@@ -63,7 +63,7 @@ int randle_input_data(input_data* input, population_data* data){
         return 0;
     case HEX_ROLL20_EXACT_SIZE:
         data->width = input->width;
-        data->height = (long)(input->height*roll20_height_scale);
+        data->height = (long)(((double)(input->height))*roll20_height_scale);
         data->size = roll20_standart_size*roll20_width_scale;
         data->stroke_width = roll20_standart_stroke_width;
         data->stroke_color = black;
@@ -152,8 +152,8 @@ void populate_roll20_hex_grid(FILE* file, population_data* data){
     const double width_scale = (double)(sqrt_three*data->size);
     const double width_odd_offset = l_sqrt3_per2;
     const double height_scale = (double)(3*l_per2);
-    const double view_box_width = (double)(data->width*width_scale+width_odd_offset+data->stroke_width/2);
-    const double view_box_height = (double)((data->size*(data->height*3+1)+data->stroke_width)/2)*roll20_factor;
+    const double view_box_width = (double)(data->width*width_scale);
+    const double view_box_height = (double)((data->size*(data->height*3+1))/2)*roll20_factor;
 
     fprintf(file, 
         header, 
@@ -179,7 +179,7 @@ void populate_roll20_hex_grid(FILE* file, population_data* data){
     fputs("\t<g>\n", file);
     for(long i = 0; i < data->height; i++){
         if(i%2){
-            for(long j = 0; j < data->width; j++){
+            for(long j = 0; j < data->width-1; j++){
                 fprintf(file, 
                     use_hexagon, 
                     (double)(j*width_scale+width_odd_offset), 
