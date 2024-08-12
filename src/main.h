@@ -20,7 +20,8 @@ const double sqrt_tree_2 = sqrt_three/2;
 const double roll20_standart_cell_size = 70.0;      // [pixel]
 const double roll20_standart_stroke_width = 0.025;  // Standart stroke width [unit]
 const double roll20_standart_size = 1.0;            // Standart Hexagon side lenght [unit]
-const double roll20_height_scale = 1.12;            // Roll20 height cell TODO: Tentar eliminar essa constante
+// TODO: Tentar eliminar a constante height_scale
+const double roll20_height_scale = 1.12;            // Roll20 height cell
 const double roll20_width_scale = 0.930868864;      // Roll20 width cell quantity ratio
 const double roll20_factor = 1.028197616008545;     // Roll20 height distortion factor
 // Standart Hexagon width in roll20 [pixel]
