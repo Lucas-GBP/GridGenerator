@@ -22,6 +22,7 @@ const char* arguments[] = {
 };
 const int arg_quant = 5;    // Quantity of possible arguments
 const int max_arg_size = 32;// Biggest argument string size
+// TODO: make the help string :P
 const char* help_string = "You want help.\n";
 enum ARGUMENTS {
     ARGUMENTS_WIDTH,
