@@ -4,9 +4,32 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include <string.h>
 
 #define TRUE 1
 #define FALSE 0
+#define NULL_TERMINATOR '\0'
+
+/*
+ * User input arguments
+ */
+const char* arguments[] = {
+    "-width",
+    "-height",
+    "--roll20",
+    "--roll20_exact",
+    "--help"
+};
+const int arg_quant = 5;    // Quantity of possible arguments
+const int max_arg_size = 32;// Biggest argument string size
+const char* help_string = "You want help.\n";
+enum ARGUMENTS {
+    ARGUMENTS_WIDTH,
+    ARGUMENTS_HEIGHT,
+    ARGUMENTS_ROLL20,
+    ARGUMENTS_ROLL20_EXACT,
+    ARGUMENTS_HELP
+};
 
 /*
  * Math Constansts
@@ -50,18 +73,18 @@ typedef int8_t bool;
 enum MODES {
     HEX_STANDART,
     HEX_ROLL20,
-    HEX_ROLL20_EXACT_SIZE
+    HEX_ROLL20_EXACT_SIZE,
+    HELP
 };
 
-struct input_data {
+typedef struct {
     long width;             // Horizontal quantity of cells
     long height;            // Vertical quantity of cells
     bool roll20_flag;       //
     enum MODES mode;        //
-};
-typedef struct input_data input_data;
+} input_data;
 
-struct population_data {
+typedef struct {
     long width;             // Quantity of horizontal cells
     long height;            // Quantity of vertical cells
     double size;            // Width of the cell [unit]
@@ -70,15 +93,15 @@ struct population_data {
     char* background_color; // Hex-code in string of background color
     double scale_px;        // Total hexagon width in [pixel/unit]
     char* file_name;        // File Name
-};
-typedef struct population_data population_data;
+} population_data;
 
 /*
  * Functions
  */
-int randle_arguments(int argc, char** argv, input_data* input);
-int randle_input_data(input_data* input, population_data* data);
+int handling_arguments(int argc, char** argv, input_data* input);
+int handling_input_data(input_data* input, population_data* data);
 void populate_hex_grid(FILE* file, population_data* data);
 void populate_roll20_hex_grid(FILE* file, population_data* data);
+int safe_string_copy(char* string, char* buffer, int max_lenght);
 
 #endif

@@ -3,21 +3,27 @@
 /*
  * Standart colors
 */
-char* transparent = "none";
-char* black = "black";
-char* white = "white";
+char* color_transparent = "none";
+char* color_black = "black";
+char* color_white = "white";
 
 int main(int argc, char** argv){
     // Validating inputs
     input_data input;
-    if(randle_arguments(argc, argv, &input)){
+    if(handling_arguments(argc, argv, &input)){
+        printf("\tsomething got wrong in the input. try --help");
         return 1;
+    }
+    if(input.mode == HELP){
+        printf(help_string);
+        return 0;
     }
     // Inputs
     population_data data;
-    if(randle_input_data(&input, &data)){
+    if(handling_input_data(&input, &data)){
         return 1;
     }
+    printf("Arguments verified, generating grid...\n");
 
     FILE* file = fopen(data.file_name, "w+");
     if(!file){
@@ -32,31 +38,92 @@ int main(int argc, char** argv){
     }
 
     fclose(file);
+    printf("grid generated :)\n");
     return 0;
 }
 
-int randle_arguments(int argc, char** argv, input_data* input){
-    if(argc < 3){
-        printf("Error:\tNot enough arguments.\n\tIt's necessary at least 2 number arguments for width and height\n");
-        return 1;
+int handling_arguments(int argc, char** argv, input_data* input){
+    // Standart input
+    input->width = 0;
+    input->height = 0;
+    input->roll20_flag = FALSE;
+    input->mode = HEX_STANDART;
+    //input buffer
+    char input_buffer[max_arg_size+1];
+
+    for(int i = 1; i < argc; i++){
+        if(safe_string_copy(argv[i], input_buffer, max_arg_size)){
+            return 1;
+        }
+
+        int j;
+        for(j = 0; j < arg_quant+1; j++){
+            if(j >= arg_quant){
+                printf("Error:\n\tArgument[%d] (%s) not reconized.\n", i, input_buffer);
+                return 1;
+            }
+            if(!strcmp(arguments[j], input_buffer)){
+                break;
+            }
+        }
+
+        switch (j) {
+        case ARGUMENTS_WIDTH:
+            i++;
+            if(i >= argc){ 
+                printf("Error:\n\tNot enought arguments. after -width you need to especify the size with a integer number.\n");
+                return 1; 
+            }
+            if(safe_string_copy(argv[i], input_buffer, max_arg_size)){
+                return 1;
+            }
+            input->width = atol(input_buffer);
+
+            break;
+        case ARGUMENTS_HEIGHT:
+            i++;
+            if(i >= argc){
+                printf("Error:\n\tNot enought arguments. after -height you need to especify the size with a integer number.\n");
+                return 1; 
+            }
+            if(safe_string_copy(argv[i], input_buffer, max_arg_size)){
+                return 1;
+            }
+            input->height = atol(input_buffer);
+
+            break;
+        case ARGUMENTS_ROLL20:
+            input->roll20_flag = TRUE;
+            input->mode = HEX_ROLL20;
+
+            break;
+        case ARGUMENTS_ROLL20_EXACT:
+            input->roll20_flag = TRUE;
+            input->mode = HEX_ROLL20_EXACT_SIZE;
+
+            break;
+        case ARGUMENTS_HELP:
+            input->mode = HELP;
+            return 0;
+        }
     }
 
-    input->width = atol(argv[1]);
-    input->height = atol(argv[2]);
-    input->roll20_flag = TRUE;
-    input->mode = HEX_ROLL20_EXACT_SIZE;
+    if(input->width < 1 || input->height < 1){
+        printf("Error:\n\tinvalid grid size.\n");
+        return 1;
+    }
     return 0;
 }
 
-int randle_input_data(input_data* input, population_data* data){
+int handling_input_data(input_data* input, population_data* data){
     switch (input->mode){
     case HEX_ROLL20:
         data->width = input->width;
         data->height = input->height;
         data->size = roll20_standart_size;
         data->stroke_width = roll20_standart_stroke_width;
-        data->stroke_color = black;
-        data->background_color = transparent;
+        data->stroke_color = color_black;
+        data->background_color = color_transparent;
         data->scale_px = roll20_scale_px;
         data->file_name = "hexagonal_grid_roll20.svg";
 
@@ -66,8 +133,8 @@ int randle_input_data(input_data* input, population_data* data){
         data->height = (long)(((double)(input->height))*roll20_height_scale);
         data->size = roll20_standart_size*roll20_width_scale;
         data->stroke_width = roll20_standart_stroke_width;
-        data->stroke_color = black;
-        data->background_color = transparent;
+        data->stroke_color = color_black;
+        data->background_color = color_transparent;
         data->scale_px = roll20_scale_px;
         data->file_name = "hexagonal_grid_roll20.svg";
 
@@ -78,8 +145,8 @@ int randle_input_data(input_data* input, population_data* data){
         data->height = input->height;
         data->size = 2;
         data->stroke_width = 0.2;
-        data->stroke_color = black;
-        data->background_color = transparent;
+        data->stroke_color = color_black;
+        data->background_color = color_transparent;
         data->scale_px = 35;
         data->file_name = "hexagonal_grid.svg";
 
@@ -199,4 +266,19 @@ void populate_roll20_hex_grid(FILE* file, population_data* data){
     }
     fputs("\t</g>\n", file);
     fputs(close_svg, file);
+}
+
+int safe_string_copy(char* string, char* buffer, int max_lenght){
+    buffer[max_lenght] = NULL_TERMINATOR;
+    int i = 0;
+    for(; string[i] != NULL_TERMINATOR && i < max_lenght; i++){
+        buffer[i] = string[i];
+    }
+
+    if(string[i] != NULL_TERMINATOR){
+        return 1;
+    }
+
+    buffer[i] = NULL_TERMINATOR;
+    return 0;
 }
