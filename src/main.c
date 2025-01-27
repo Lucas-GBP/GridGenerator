@@ -162,8 +162,8 @@ void populate_hex_grid(FILE* file, population_data* data){
     const double width_scale = (double)(sqrt_three*data->size);
     const double width_odd_offset = l_sqrt3_per2;
     const double height_scale = (double)(3*l_per2);
-    const double view_box_width = (double)(data->width*width_scale+width_odd_offset+data->stroke_width/2);
-    const double view_box_height = (double)((data->size*(data->height*3+1)+data->stroke_width)/2);
+    const double view_box_width = (double)((double)(data->width)*width_scale+width_odd_offset+data->stroke_width/2);
+    const double view_box_height = (double)((data->size*(double)(data->height*3+1)+data->stroke_width)/2);
 
     fprintf(file, 
         header, 
@@ -192,16 +192,16 @@ void populate_hex_grid(FILE* file, population_data* data){
             for(long j = 0; j < data->width; j++){
                 fprintf(file, 
                     use_hexagon, 
-                    (double)(j*width_scale+width_odd_offset), 
-                    (double)(i*height_scale)
+                    (double)(j)*width_scale+width_odd_offset, 
+                    (double)(i)*height_scale
                 );
             }
         } else {
             for(long j = 0; j < data->width; j++){
                 fprintf(file, 
                     use_hexagon, 
-                    (double)(j*width_scale), 
-                    (double)(i*height_scale)
+                    (double)(j)*width_scale, 
+                    (double)(i)*height_scale
                 );
             }
         }
@@ -219,8 +219,8 @@ void populate_roll20_hex_grid(FILE* file, population_data* data){
     const double width_scale = (double)(sqrt_three*data->size);
     const double width_odd_offset = l_sqrt3_per2;
     const double height_scale = (double)(3*l_per2);
-    const double view_box_width = (double)(data->width*width_scale);
-    const double view_box_height = (double)((data->size*(data->height*3+1))/2)*roll20_factor;
+    const double view_box_width = (double)(data->width)*width_scale;
+    const double view_box_height = ((data->size*(double)(data->height*3+1))/2)*roll20_factor;
 
     fprintf(file, 
         header, 
@@ -249,16 +249,16 @@ void populate_roll20_hex_grid(FILE* file, population_data* data){
             for(long j = 0; j < data->width-1; j++){
                 fprintf(file, 
                     use_hexagon, 
-                    (double)(j*width_scale+width_odd_offset), 
-                    (double)(i*height_scale*roll20_factor)
+                    (double)(j)*width_scale+width_odd_offset, 
+                    (double)(i)*height_scale*roll20_factor
                 );
             }
         } else {
             for(long j = 0; j < data->width; j++){
                 fprintf(file, 
                     use_hexagon, 
-                    (double)(j*width_scale), 
-                    (double)(i*height_scale*roll20_factor)
+                    (double)(j)*width_scale, 
+                    (double)(i)*height_scale*roll20_factor
                 );
             }
         }
